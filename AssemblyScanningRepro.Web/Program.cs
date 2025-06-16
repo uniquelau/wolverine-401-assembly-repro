@@ -1,26 +1,71 @@
+using Microsoft.EntityFrameworkCore;
+
 using JasperFx;
 using Wolverine;
 using Wolverine.Http;
+using Wolverine.EntityFrameworkCore;
+using Wolverine.SqlServer;
 
-var builder = WebApplication.CreateBuilder(args);
+using WolverineTest.Web.Data;
+using WolverineTest.Web.Extensions;
 
-builder.Host.UseWolverine(opts =>
+namespace WolverineTest.Web
 {
-	// opts.ApplicationAssembly = typeof(Program).Assembly;
-});
+	public class Program
+	{
+		public static async Task<int> Main(string[] args)
+		{
+			var builder = WebApplication.CreateBuilder(args);
+			var connectionString = builder.Configuration.GetConnectionString("Data");
+			if (string.IsNullOrEmpty(connectionString)) throw new InvalidOperationException("Connection string not set.");
 
-builder.Services.AddControllers();
-builder.Services.AddWolverineHttp();
+			builder.Services.AddWebApi(builder.Configuration);
 
-var app = builder.Build();
+			builder.Services.AddWolverineHttp();
 
-// Configure the HTTP request pipeline.
+			builder.Host.UseWolverine(opts =>
+			{
+				opts.Services.AddDbContextWithWolverineIntegration<WolverineTestContext>(x =>
+				{
+					x.UseSqlServer(builder.Configuration.GetConnectionString(connectionString));
+				});
 
-app.UseHttpsRedirection();
-app.MapWolverineEndpoints();
+				opts.Services.AddDbContextWithWolverineManagedMultiTenancy<WolverineTestContext>((context, connectionString, tenantId) =>
+				{
+					context.UseSqlServer(connectionString.Value, b => b.MigrationsAssembly("WolverineTest.Web"));
+				}, AutoCreate.CreateOrUpdate);
 
-app.UseAuthorization();
+				opts.PersistMessagesWithSqlServer(connectionString)
 
-app.MapControllers();
+						.RegisterStaticTenants(x =>
+						{
+							x.Register("Tenant1", builder.Configuration.GetConnectionString("Tenant1")!);
+							x.Register("Tenant2", builder.Configuration.GetConnectionString("Tenant2")!);
+						});
 
-return await app.RunJasperFxCommands(args);
+				// Set up Entity Framework Core as the support for Wolverine's transactional middleware
+				opts.UseEntityFrameworkCoreTransactions();
+
+				// Enrolling all local queues into the durable inbox/outbox processing
+				opts.Policies.UseDurableLocalQueues();
+			});
+
+			var app = builder.Build();
+
+
+
+			// Configure the HTTP request pipeline.
+			app.UseHttpsRedirection();
+			app.MapWolverineEndpoints(opts =>
+			{
+				// Register tenant detection
+				opts.TenantId.IsRequestHeaderValue("tenantId");
+				opts.TenantId.DefaultIs(StorageConstants.DefaultTenantId);
+			});
+
+			app.UseAuthorization();
+
+			return await app.RunJasperFxCommands(args);
+		}
+	}
+}

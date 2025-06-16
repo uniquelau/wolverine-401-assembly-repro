@@ -1,79 +1,74 @@
-### Implict (Found no Wolverine HTTP endpoints.)
+## Setup
 
-builder.Host.UseWolverine(opts =>
+Run `Update-Database`. You will need to run against each database to ensure the migrations are applied.
+
+The easier way to achieve this, is to update the 'Data' connection string in `appsettings.json`.
+
+### Other observations
+
+Entity frameworks migrations are not applied automatically.
+
+## Issue
+
+When the UserManager is injected into a handler, the UserManager is not scoped to the tenant database.
+
+This results in User being created in the master tenant, rather than the tenant related to the request.
+
+## Test results
+
+Create_user_is_successful_explict => OK => User is created in Tenant 1.
+Create_user_is_successful_di => FAIL => User does not exist in Tenant 1 (and exists in Master)
+
+## Code-gen
+
+### DI (UserManager loaded via method parameter)
+DiCreateUserCommandHandler
+
+```
+public override async System.Threading.Tasks.Task HandleAsync(Wolverine.Runtime.MessageContext context, System.Threading.CancellationToken cancellation)
 {
-	// opts.ApplicationAssembly = typeof(Program).Assembly;
-});
+    using var serviceScope = _serviceScopeFactory.CreateScope();
+            
+    /*
+    * Dependency: Descriptor: ServiceType: System.IServiceProvider Lifetime: Scoped ImplementationType: Microsoft.Extensions.DependencyInjection.ServiceDescriptor
+    * Your code is directly using IServiceProvider
+    */
+    var userManager = Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<Microsoft.AspNetCore.Identity.UserManager<WolverineTest.Web.Data.DbUser>>(serviceScope.ServiceProvider);
+     // The actual message body
+    var diCreateUserCommand = (WolverineTest.Web.Handlers.Di.DiCreateUserCommand)context.Envelope.Message;
 
-```
-info: Wolverine.Runtime.WolverineRuntime[0]
-      Exporting Open Telemetry metrics from Wolverine with name Wolverine:Wolverine.Http, version 4.0.1.0
-info: Wolverine.Http.HttpGraph[0]
-      Found 0 Wolverine HTTP endpoints in assemblys Wolverine.Http
-warn: Wolverine.Http.HttpGraph[0]
-      Found no Wolverine HTTP endpoints. If this is not expected, check the assemblies being scanned. See https://wolverine.netlify.app/guide/http/integration.html#discovery for more information
-Searching 'JasperFx, Version=1.0.5.0, Culture=neutral, PublicKeyToken=null' for commands
-Searching 'Weasel.Core, Version=8.0.0.0, Culture=neutral, PublicKeyToken=null' for commands
-Searching 'Wolverine, Version=4.0.1.0, Culture=neutral, PublicKeyToken=null' for commands
-
-info: Wolverine.Runtime.WolverineRuntime[0]
-      Starting Wolverine messaging for application assembly Wolverine.Http, Version=4.0.1.0, Culture=neutral, PublicKeyToken=null
-info: Wolverine.Runtime.WolverineRuntime[0]
-      The Wolverine code generation mode is Dynamic. This is suitable for development, but you may want to opt into other options for production usage to reduce start up time and resource utilization.
-info: Wolverine.Runtime.WolverineRuntime[0]
-      See https://wolverine.netlify.app/guide/codegen.html for more information
-info: Wolverine.Configuration.HandlerDiscovery[0]
-      Searching assembly Wolverine.Http, Version=4.0.1.0, Culture=neutral, PublicKeyToken=null for Wolverine message handlers
-warn: Wolverine.Configuration.HandlerDiscovery[0]
-      Wolverine found no handlers. If this is unexpected, check the assemblies that it's scanning. See https://wolverine.netlify.app/guide/handlers/discovery.html for more information
-info: Wolverine.Runtime.WolverineRuntime[0]
-      Wolverine assigned node id for envelope persistence is 1378646969
-info: Microsoft.Hosting.Lifetime[14]
-      Now listening on: https://localhost:7069
-info: Microsoft.Hosting.Lifetime[14]
-      Now listening on: http://localhost:5218
-info: Microsoft.Hosting.Lifetime[0]
-      Application started. Press Ctrl+C to shut down.
-info: Microsoft.Hosting.Lifetime[0]
-      Hosting environment: Development
-info: Microsoft.Hosting.Lifetime[0]
-      Content root path: C:\Users\GI\source\repos\AssemblyScanningRepro\AssemblyScanningRepro.Web
+    System.Diagnostics.Activity.Current?.SetTag("message.handler", "WolverineTest.Web.Handlers.Di.DiCreateUserHandler");
+            
+    // The actual message execution
+    (var outgoing1, var outgoing2) = await WolverineTest.Web.Handlers.Di.DiCreateUserHandler.Handle(diCreateUserCommand, userManager).ConfigureAwait(false);
 ```
 
-### Explict (Found 1 Wolverine HTTP endpoints)
-
-builder.Host.UseWolverine(opts =>
+### Explict (UserManager passed via property on Command)
+```
+public override async System.Threading.Tasks.Task Handle(Microsoft.AspNetCore.Http.HttpContext httpContext)
 {
-	opts.ApplicationAssembly = typeof(Program).Assembly;
-});
-
-```
-info: Wolverine.Runtime.WolverineRuntime[0]
-      Exporting Open Telemetry metrics from Wolverine with name Wolverine:Wolverine.Http, version 4.0.1.0
-info: Wolverine.Http.HttpGraph[0]
-      Found 1 Wolverine HTTP endpoints in assemblys AssemblyScanningRepro.Web
-Searching 'JasperFx, Version=1.0.5.0, Culture=neutral, PublicKeyToken=null' for commands
-Searching 'Weasel.Core, Version=8.0.0.0, Culture=neutral, PublicKeyToken=null' for commands
-Searching 'Wolverine, Version=4.0.1.0, Culture=neutral, PublicKeyToken=null' for commands
-
-info: Wolverine.Runtime.WolverineRuntime[0]
-      Starting Wolverine messaging for application assembly AssemblyScanningRepro.Web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-info: Wolverine.Runtime.WolverineRuntime[0]
-      The Wolverine code generation mode is Dynamic. This is suitable for development, but you may want to opt into other options for production usage to reduce start up time and resource utilization.
-info: Wolverine.Runtime.WolverineRuntime[0]
-      See https://wolverine.netlify.app/guide/codegen.html for more information
-info: Wolverine.Configuration.HandlerDiscovery[0]
-      Searching assembly AssemblyScanningRepro.Web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null for Wolverine message handlers
-info: Wolverine.Runtime.WolverineRuntime[0]
-      Wolverine assigned node id for envelope persistence is 1712323986
-info: Microsoft.Hosting.Lifetime[14]
-      Now listening on: https://localhost:7069
-info: Microsoft.Hosting.Lifetime[14]
-      Now listening on: http://localhost:5218
-info: Microsoft.Hosting.Lifetime[0]
-      Application started. Press Ctrl+C to shut down.
-info: Microsoft.Hosting.Lifetime[0]
-      Hosting environment: Development
-info: Microsoft.Hosting.Lifetime[0]
-      Content root path: C:\Users\GI\source\repos\AssemblyScanningRepro\AssemblyScanningRepro.Web
+    // Tenant Id detection
+    // 1. Tenant Id is request header 'tenantId'
+    // 2. Wolverine.Http.Runtime.MultiTenancy.FallbackDefault
+    var tenantId = await TryDetectTenantId(httpContext);
+    var messageContext = new Wolverine.Runtime.MessageContext(_wolverineRuntime);
+    messageContext.TenantId = tenantId;
+    await using var wolverineTestContext = await _dbContextBuilder.BuildAndEnrollAsync(messageContext, httpContext.RequestAborted);
+    var identityErrorDescriber = new Microsoft.AspNetCore.Identity.IdentityErrorDescriber();
+    using var userStore = new Microsoft.AspNetCore.Identity.EntityFrameworkCore.UserStore<WolverineTest.Web.Data.DbUser, Microsoft.AspNetCore.Identity.IdentityRole, WolverineTest.Web.Data.WolverineTestContext, string, Microsoft.AspNetCore.Identity.IdentityUserClaim<string>, Microsoft.AspNetCore.Identity.IdentityUserRole<string>, Microsoft.AspNetCore.Identity.IdentityUserLogin<string>, Microsoft.AspNetCore.Identity.IdentityUserToken<string>, Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>>(wolverineTestContext, identityErrorDescriber);
+    var passwordHasher = new Microsoft.AspNetCore.Identity.PasswordHasher<WolverineTest.Web.Data.DbUser>(_options2);
+    var userValidator = new Microsoft.AspNetCore.Identity.UserValidator<WolverineTest.Web.Data.DbUser>(identityErrorDescriber);
+    System.Collections.Generic.IEnumerable<Microsoft.AspNetCore.Identity.IUserValidator<WolverineTest.Web.Data.DbUser>> userValidatorIEnumerable = new Microsoft.AspNetCore.Identity.IUserValidator<WolverineTest.Web.Data.DbUser>[]{userValidator};
+    var passwordValidator = new Microsoft.AspNetCore.Identity.PasswordValidator<WolverineTest.Web.Data.DbUser>(identityErrorDescriber);
+    System.Collections.Generic.IEnumerable<Microsoft.AspNetCore.Identity.IPasswordValidator<WolverineTest.Web.Data.DbUser>> passwordValidatorIEnumerable = new Microsoft.AspNetCore.Identity.IPasswordValidator<WolverineTest.Web.Data.DbUser>[]{passwordValidator};
+    var upperInvariantLookupNormalizer = new Microsoft.AspNetCore.Identity.UpperInvariantLookupNormalizer();
+    using var userManager = new Microsoft.AspNetCore.Identity.UserManager<WolverineTest.Web.Data.DbUser>(userStore, _options1, passwordHasher, userValidatorIEnumerable, passwordValidatorIEnumerable, upperInvariantLookupNormalizer, identityErrorDescriber, httpContext.RequestServices, _logger);
+    Wolverine.Http.Runtime.RequestIdMiddleware.Apply(httpContext, messageContext);
+    // Reading the request body via JSON deserialization
+    var (exCreateUserRequest, jsonContinue) = await ReadJsonAsync<WolverineTest.Web.Handlers.Explict.ExCreateUserRequest>(httpContext);
+    if (jsonContinue == Wolverine.HandlerContinuation.Stop) return;
+    var exCreateUserCommand = WolverineTest.Web.Handlers.Explict.ExCreateUserEndpoint.Before(exCreateUserRequest, userManager);
+            
+    // The actual HTTP request handler execution
+    var exCreateUserResponse_response = await WolverineTest.Web.Handlers.Explict.ExCreateUserEndpoint.Handle(exCreateUserRequest, exCreateUserCommand, messageContext).ConfigureAwait(false);
 ```
