@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35919.96
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WolverineTest.Web", "AssemblyScanningRepro.Web\WolverineTest.Web.csproj", "{AE7D8978-BEB4-432C-BDEF-232ED36C1474}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
@@ -12,20 +10,22 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WolverineTest.Test", "WolverineTest.Test\WolverineTest.Test.csproj", "{664A44B9-0143-4AB5-B1D3-407400F2EC34}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WolverineTest.Web", "WolverineTest.Web\WolverineTest.Web.csproj", "{3040D2D6-CE75-CAE0-A29B-241B4A1BFA19}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AE7D8978-BEB4-432C-BDEF-232ED36C1474}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AE7D8978-BEB4-432C-BDEF-232ED36C1474}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AE7D8978-BEB4-432C-BDEF-232ED36C1474}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AE7D8978-BEB4-432C-BDEF-232ED36C1474}.Release|Any CPU.Build.0 = Release|Any CPU
 		{664A44B9-0143-4AB5-B1D3-407400F2EC34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{664A44B9-0143-4AB5-B1D3-407400F2EC34}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{664A44B9-0143-4AB5-B1D3-407400F2EC34}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{664A44B9-0143-4AB5-B1D3-407400F2EC34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3040D2D6-CE75-CAE0-A29B-241B4A1BFA19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3040D2D6-CE75-CAE0-A29B-241B4A1BFA19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3040D2D6-CE75-CAE0-A29B-241B4A1BFA19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3040D2D6-CE75-CAE0-A29B-241B4A1BFA19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

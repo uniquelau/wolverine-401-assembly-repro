@@ -9,13 +9,13 @@ namespace Internal.Generated.WolverineHandlers
     [global::System.CodeDom.Compiler.GeneratedCode("JasperFx", "1.0.0")]
     public sealed class DiGetUserCommandHandler574892174 : Wolverine.Runtime.Handlers.MessageHandler
     {
-        private readonly Microsoft.Extensions.Logging.ILogger<WolverineTest.Web.Handlers.Di.DiGetUserCommand> _loggerForMessage;
         private readonly Wolverine.EntityFrameworkCore.Internals.IDbContextBuilder<WolverineTest.Web.Data.WolverineTestContext> _dbContextBuilder;
+        private readonly Microsoft.Extensions.Logging.ILogger<WolverineTest.Web.Handlers.Di.DiGetUserCommand> _loggerForMessage;
 
-        public DiGetUserCommandHandler574892174(Microsoft.Extensions.Logging.ILogger<WolverineTest.Web.Handlers.Di.DiGetUserCommand> loggerForMessage, Wolverine.EntityFrameworkCore.Internals.IDbContextBuilder<WolverineTest.Web.Data.WolverineTestContext> dbContextBuilder)
+        public DiGetUserCommandHandler574892174(Wolverine.EntityFrameworkCore.Internals.IDbContextBuilder<WolverineTest.Web.Data.WolverineTestContext> dbContextBuilder, Microsoft.Extensions.Logging.ILogger<WolverineTest.Web.Handlers.Di.DiGetUserCommand> loggerForMessage)
         {
-            _loggerForMessage = loggerForMessage;
             _dbContextBuilder = dbContextBuilder;
+            _loggerForMessage = loggerForMessage;
         }
 
 

@@ -1,7 +1,6 @@
 ﻿using Alba;
 using Alba.Security;
 using Microsoft.IdentityModel.JsonWebTokens;
-using System.Security.Claims;
 using WolverineTest.Web;
 
 namespace WolverineTest.Test.Infrastructure

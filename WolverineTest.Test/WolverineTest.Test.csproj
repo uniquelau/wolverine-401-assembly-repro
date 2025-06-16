@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AssemblyScanningRepro.Web\WolverineTest.Web.csproj" />
+    <ProjectReference Include="..\WolverineTest.Web\WolverineTest.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -16,20 +16,20 @@ namespace Internal.Generated.WolverineHandlers
     public sealed class POST_ex_users : Wolverine.Http.HttpHandler
     {
         private readonly Wolverine.Http.WolverineHttpOptions _wolverineHttpOptions;
-        private readonly Microsoft.Extensions.Logging.ILogger<Microsoft.AspNetCore.Identity.UserManager<WolverineTest.Web.Data.DbUser>> _logger;
-        private readonly Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Identity.IdentityOptions> _options1;
-        private readonly Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Identity.PasswordHasherOptions> _options2;
         private readonly Wolverine.EntityFrameworkCore.Internals.IDbContextBuilder<WolverineTest.Web.Data.WolverineTestContext> _dbContextBuilder;
+        private readonly Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Identity.IdentityOptions> _options1;
         private readonly Wolverine.Runtime.IWolverineRuntime _wolverineRuntime;
+        private readonly Microsoft.Extensions.Logging.ILogger<Microsoft.AspNetCore.Identity.UserManager<WolverineTest.Web.Data.DbUser>> _logger;
+        private readonly Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Identity.PasswordHasherOptions> _options2;
 
-        public POST_ex_users(Wolverine.Http.WolverineHttpOptions wolverineHttpOptions, Microsoft.Extensions.Logging.ILogger<Microsoft.AspNetCore.Identity.UserManager<WolverineTest.Web.Data.DbUser>> logger, Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Identity.IdentityOptions> __options1, Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Identity.PasswordHasherOptions> __options2, Wolverine.EntityFrameworkCore.Internals.IDbContextBuilder<WolverineTest.Web.Data.WolverineTestContext> dbContextBuilder, Wolverine.Runtime.IWolverineRuntime wolverineRuntime) : base(wolverineHttpOptions)
+        public POST_ex_users(Wolverine.Http.WolverineHttpOptions wolverineHttpOptions, Wolverine.EntityFrameworkCore.Internals.IDbContextBuilder<WolverineTest.Web.Data.WolverineTestContext> dbContextBuilder, Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Identity.IdentityOptions> __options1, Wolverine.Runtime.IWolverineRuntime wolverineRuntime, Microsoft.Extensions.Logging.ILogger<Microsoft.AspNetCore.Identity.UserManager<WolverineTest.Web.Data.DbUser>> logger, Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Identity.PasswordHasherOptions> __options2) : base(wolverineHttpOptions)
         {
             _wolverineHttpOptions = wolverineHttpOptions;
-            _logger = logger;
-            _options1 = __options1;
-            _options2 = __options2;
             _dbContextBuilder = dbContextBuilder;
+            _options1 = __options1;
             _wolverineRuntime = wolverineRuntime;
+            _logger = logger;
+            _options2 = __options2;
         }
 
 
