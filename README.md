@@ -1,18 +1,26 @@
 ## Setup
 
-Run `Update-Database`. You will need to run against each database to ensure the migrations are applied.
+Run `Update-Database`. 
 
-The easier way to achieve this, is to update the 'Data' connection string in `appsettings.json`.
+You will need to run against each database to ensure the EF migrations are applied.
+
+The easiest way to achieve this, is to update the 'Data' connection string in `appsettings.json`, and then run Update-Database. This will allow you to quickly target each database. Once done, discard the changes to this file.
 
 ### Other observations
 
-Entity frameworks migrations are not applied automatically.
+Entity frameworks migrations are not applied automatically, should they? Not sure
+https://jeremydmiller.com/2025/05/15/wolverine-4-is-bringing-multi-tenancy-to-ef-core/
 
 ## Issue
 
 When the UserManager is injected into a handler, the UserManager is not scoped to the tenant database.
 
 This results in User being created in the master tenant, rather than the tenant related to the request.
+
+The code contains two examples:
+
+"Explict" -> User Manager that is injected into the Endpoint is passed to a handler (this works)
+"DI" -> User Manager that is injected into the handler is not scoped to the tenant
 
 ## Test results
 
