@@ -2,35 +2,35 @@
 
 Run `Update-Database`. 
 
-You will need to run against each database to ensure the EF migrations are applied.
+You will need to run against each database to ensure the EF migrations are applied.  
 
-The easiest way to achieve this, is to update the 'Data' connection string in `appsettings.json`, and then run Update-Database. This will allow you to quickly target each database. Once done, discard the changes to this file.
+The easiest way to achieve this, is to update the 'Data' connection string in `appsettings.json`, and then run Update-Database. This will allow you to quickly target each database. Once done, discard the changes to this file.  
 
 ### Other observations
 
-Entity frameworks migrations are not applied automatically, should they? Not sure
-https://jeremydmiller.com/2025/05/15/wolverine-4-is-bringing-multi-tenancy-to-ef-core/
+Entity frameworks migrations are not applied automatically, should they? Not sure  
+https://jeremydmiller.com/2025/05/15/wolverine-4-is-bringing-multi-tenancy-to-ef-core/  
 
 ## Issue
 
-When the UserManager is injected into a handler, the UserManager is not scoped to the tenant database.
+When the UserManager is injected into a handler, the UserManager is not scoped to the tenant database.  
 
-This results in User being created in the master tenant, rather than the tenant related to the request.
+This results in User being created in the master tenant, rather than the tenant related to the request.  
 
-The code contains two examples:
+The code contains two examples:  
 
-"Explict" -> User Manager that is injected into the Endpoint is passed to a handler (this works)
-"DI" -> User Manager that is injected into the handler is not scoped to the tenant
+"Explict" -> User Manager that is injected into the Endpoint is passed to a handler (this works)  
+"DI" -> User Manager that is injected into the handler is not scoped to the tenant  
 
 ## Test results
 
-Create_user_is_successful_explict => OK => User is created in Tenant 1.
-Create_user_is_successful_di => FAIL => User does not exist in Tenant 1 (and exists in Master)
+Create_user_is_successful_explict => OK => User is created in Tenant 1.  
+Create_user_is_successful_di => FAIL => User does not exist in Tenant 1 (and exists in Master)  
 
 ## Code-gen
 
 ### DI (UserManager loaded via method parameter)
-DiCreateUserCommandHandler
+DiCreateUserCommandHandler  
 
 ```
 public override async System.Threading.Tasks.Task HandleAsync(Wolverine.Runtime.MessageContext context, System.Threading.CancellationToken cancellation)
